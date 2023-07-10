@@ -8,9 +8,10 @@ const morgan = require('morgan');
 
 
 //2. global middleware'larım
-server.use(helmet());
+server.use(helmet());        //3rd-party middleware
 server.use(cors());
-server.use(morgan('dev'));
+server.use(morgan('dev'));  
+server.use(express.json());  //build-in middleware
 
 
 //3. Router'larım
@@ -20,7 +21,12 @@ server.get('/', (req,res)=>{
 
 
 //4. Error Middleware
+server.use((err,req,res,next)=>{
+    res
+        .status(err.status || 500)
+        .json({message: err.message || "Server error!.."})
 
+})
 
 //5. export
 module.exports = server;

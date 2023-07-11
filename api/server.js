@@ -5,6 +5,9 @@ require('dotenv').config();
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
+const { restricted } = require('./Auth/auth-middleware');
+const userRouter = require('./Users/users-router')
+const authRouter = require('./Auth/auth-router')
 
 
 //2. global middleware'larım
@@ -15,9 +18,11 @@ server.use(express.json());  //build-in middleware
 
 
 //3. Router'larım
-server.get('/', (req,res)=>{
+server.get('/', restricted, (req,res)=>{
     res.json({message:"Server up and running..."})
 })
+server.use('/api/users', userRouter);
+server.use('/api/auth', authRouter);
 
 
 //4. Error Middleware

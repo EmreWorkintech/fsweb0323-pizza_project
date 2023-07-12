@@ -2,8 +2,10 @@ const router = require('express').Router();
 const User = require('../Users/users-model');
 const bcypt = require('bcryptjs');
 const { HASH_ROUND } = require('../../config');
+const { generateToken, isEmailAvailable } = require('./auth-middleware');
+const { payloadCheck } = require('../Users/users-middleware');
 
-router.post('/register', async (req,res,next)=>{
+router.post('/register', payloadCheck, isEmailAvailable, async (req,res,next)=>{
     try{
         const payload = req.body;
         payload.password = bcypt.hashSync(payload.password, Number(HASH_ROUND));
@@ -24,7 +26,8 @@ router.post('/login', async (req,res,next)=>{
         const {email, password} = req.body;
         const registeredUser = await User.getByEmail(email);
         if(registeredUser && bcypt.compareSync(password, registeredUser.password)) {
-            res.json({message: `Welcome back ${registeredUser.first_name}...`})
+            const token = generateToken(registeredUser);
+            res.json({message: `Welcome back ${registeredUser.first_name}...`, token})
         } else {
             next({status:401, message: "Invalid credentials"})
         }

@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const User = require('./users-model');
+const { isIdExist } = require('./users-middleware');
 
 router.get('/', async (req,res,next)=>{
     try {
@@ -10,7 +11,7 @@ router.get('/', async (req,res,next)=>{
     }
 })
 
-router.get('/:id', async (req,res,next)=>{
+router.get('/:id', isIdExist, async (req,res,next)=>{
     try {
         const { id } = req.params;
         const user = await User.getById(id);
@@ -20,7 +21,7 @@ router.get('/:id', async (req,res,next)=>{
     }
 })
 
-router.delete('/:id', async (req,res,next)=>{
+router.delete('/:id', isIdExist, async (req,res,next)=>{
     try {
         const { id } = req.params;
         const count = await User.remove(id);
@@ -34,7 +35,7 @@ router.delete('/:id', async (req,res,next)=>{
     }
 })
 
-router.put('/:id', async (req,res,next)=>{
+router.put('/:id', isIdExist, async (req,res,next)=>{
     try {
         const { id } = req.params;
         const count = await User.update(id, req.body);

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const User = require('../Users/users-model');
 const bcypt = require('bcryptjs');
 const { HASH_ROUND } = require('../../config');
-const { generateToken, isEmailAvailable } = require('./auth-middleware');
+const { generateToken, isEmailAvailable, restricted, logout } = require('./auth-middleware');
 const { payloadCheck } = require('../Users/users-middleware');
 
 router.post('/register', payloadCheck, isEmailAvailable, async (req,res,next)=>{
@@ -26,7 +26,7 @@ router.post('/login', async (req,res,next)=>{
         const {email, password} = req.body;
         const registeredUser = await User.getByEmail(email);
         if(registeredUser && bcypt.compareSync(password, registeredUser.password)) {
-            const token = generateToken(registeredUser);
+            const token = await generateToken(registeredUser);
             res.json({message: `Welcome back ${registeredUser.first_name}...`, token})
         } else {
             next({status:401, message: "Invalid credentials"})
@@ -40,10 +40,10 @@ router.post('/password/reset', (req,res,next)=>{
     res.json('password reset')
 })
 
-/*
-router.get('/logout', (req,res,next)=>{
-    res.json('router working as expected...')
+
+router.get('/logout', restricted, logout, (req,res,next)=>{
+    res.json({message: 'Başarılı bir şekilde logout yapıldı.'})
 })
-*/
+
 
 module.exports = router;

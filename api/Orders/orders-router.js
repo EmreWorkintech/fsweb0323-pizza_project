@@ -6,14 +6,19 @@ router.get('/', async (req,res,next)=>{
     res.json(orders)
 })
 
-router.post('/', async (req,res,next)=>{ //TODO:
-    const orders = await Order.create();
-    res.json(orders)
+router.get('/:id', async (req,res,next)=>{
+    const order = await Order.getById(req.params.id);
+    res.json(order)
 })
 
-router.put('/', async (req,res,next)=>{
-    const orders = await Order.update();
-    res.json(orders)
+router.post('/', async (req,res,next)=>{ 
+    const order = await Order.create(req.body);
+    res.status(201).json(order)
+})
+
+router.put('/:id', async (req,res,next)=>{
+    const order = await Order.update(req.params.id, req.body);
+    res.json(order)
 })
 
 module.exports = router;

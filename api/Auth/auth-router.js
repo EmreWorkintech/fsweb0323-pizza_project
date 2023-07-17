@@ -9,7 +9,6 @@ router.post('/register', payloadCheck, isEmailAvailable, async (req,res,next)=>{
     try{
         const payload = req.body;
         payload.password = bcypt.hashSync(payload.password, Number(HASH_ROUND));
-        console.log(payload.password)
         const newUser = await User.create(payload)
         if(newUser) {
             res.status(201).json({message: `Welcome ${payload.first_name}...`})
